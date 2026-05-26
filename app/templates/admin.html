@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Administrador - DemandaRest{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Encabezado de Dashboard -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-gradient-to-r from-greenwood-900 to-greenwood-800 p-6 rounded-2xl shadow-lg text-white">
+        <div>
+            <span class="text-xs font-bold text-peru-100 uppercase tracking-widest bg-greenwood-700/50 px-2.5 py-1 rounded-md border border-greenwood-600/30">Local Administrado</span>
+            <h2 class="text-2xl md:text-3xl font-extrabold mt-2 tracking-tight">{{ current_user.location_name }}</h2>
+            <p class="text-sm text-greenwood-100/70 mt-1 flex items-center gap-1.5">
+                <i data-lucide="info" class="w-4 h-4 text-peru-500"></i>
+                Vista de control de inventario perecedero, registro de ventas y pronóstico semanal.
+            </p>
+        </div>
+        <div class="flex items-center gap-3 shrink-0">
+            <div class="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/10 text-center">
+                <div class="text-[10px] text-greenwood-200 uppercase font-semibold">Fecha Local</div>
+                <div class="text-sm font-bold text-white font-mono mt-0.5">26 de Mayo, 2026</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Grid: Formulario e Inventario -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Columna Izquierda: Registro de Ventas Diarias (1/3 en desktop) -->
+        <div class="lg:col-span-1 space-y-6">
+            <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-md p-6 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-peru-500"></div>
+                <h3 class="text-lg font-bold text-stone-900 dark:text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="plus-circle" class="text-peru-500 w-5 h-5"></i>
+                    Registrar Ventas Diarias
+                </h3>
+                
+                <form hx-post="/sales" 
+                      hx-target="#sales-feedback" 
+                      hx-swap="outerHTML" 
+                      hx-indicator="#sales-spinner"
+                      class="space-y-4"
+                      id="sales-form">
+                    
+                    <div>
+                        <label for="sale_date" class="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-1">Fecha</label>
+                        <input type="date" id="sale_date" name="sale_date" value="2026-05-26" max="2026-05-26" required
+                               class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-peru-500 text-sm">
+                    </div>
+
+                    <div>
+                        <label for="shift" class="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-1">Turno (Servicio)</label>
+                        <select id="shift" name="shift" required
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-peru-500 text-sm">
+                            <option value="almuerzo">Almuerzo (12:00 PM - 5:00 PM)</option>
+                            <option value="cena">Cena (7:00 PM - 11:00 PM)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="dish_name" class="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-1">Plato Vendido</label>
+                        <select id="dish_name" name="dish_name" required
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-peru-500 text-sm">
+                            <option value="Lomo Saltado">Lomo Saltado</option>
+                            <option value="Ceviche Clásico">Ceviche Clásico</option>
+                            <option value="Ají de Gallina">Ají de Gallina</option>
+                            <option value="Arroz con Mariscos">Arroz con Mariscos</option>
+                            <option value="Anticuchos de Corazón">Anticuchos de Corazón</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="quantity_sold" class="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-1">Porciones Vendidas</label>
+                        <div class="relative">
+                            <input type="number" id="quantity_sold" name="quantity_sold" min="1" max="500" required placeholder="0"
+                                   class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-peru-500 text-sm pl-10">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i data-lucide="hash" class="w-4 h-4 text-stone-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-greenwood-900 hover:bg-greenwood-800 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm focus:outline-none focus:ring-2 focus:ring-greenwood-900 focus:ring-offset-2">
+                        <span>Registrar Venta</span>
+                        <div id="sales-spinner" class="htmx-indicator animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    </button>
+                </form>
+
+                <!-- Área para Feedback de Formulario -->
+                <div id="sales-feedback" class="mt-4"></div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Alertas de Perecederos e Inventario (2/3 en desktop) -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Contenedor Dinámico de Alertas de Ingredientes (HTMX Auto-actualizable) -->
+            <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2">
+                        <i data-lucide="alert-triangle" class="text-amber-500 w-5 h-5"></i>
+                        Alertas de Insumos Perecederos
+                    </h3>
+                    <button hx-get="/perishables" 
+                            hx-trigger="click, updatePerishables from:body" 
+                            hx-target="#perishables-container" 
+                            class="p-1.5 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 rounded-lg transition-colors"
+                            title="Actualizar alertas">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <div id="perishables-container" 
+                     hx-get="/perishables" 
+                     hx-trigger="load" 
+                     class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Cargando... (HTMX reemplazará esto inmediatamente al cargar) -->
+                    <div class="col-span-full py-8 text-center text-stone-400 flex flex-col items-center gap-2">
+                        <div class="animate-spin rounded-full h-6 w-6 border-2 border-stone-300 border-t-peru-500"></div>
+                        <p class="text-sm">Analizando inventario y riesgos de merma...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pronóstico Semanal Detallado del Local -->
+            <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-md p-6">
+                <h3 class="text-lg font-bold text-stone-900 dark:text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="trending-up" class="text-greenwood-700 w-5 h-5"></i>
+                    Pronóstico de Demanda Semanal por Plato
+                </h3>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-stone-100 dark:border-stone-800 text-xs font-bold text-stone-400 dark:text-stone-400 uppercase bg-stone-50/50 dark:bg-stone-950/20">
+                                <th class="py-3 px-4 rounded-l-xl">Plato</th>
+                                <th class="py-3 px-4 text-center">Porciones Proyectadas</th>
+                                <th class="py-3 px-4 text-center">Nivel de Confianza</th>
+                                <th class="py-3 px-4 rounded-r-xl">Estado de Alerta</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-stone-100 dark:divide-stone-800 text-sm">
+                            {% for f in forecasts %}
+                            <tr class="hover:bg-stone-50/50 dark:hover:bg-stone-950/20 transition-colors">
+                                <td class="py-4 px-4 font-semibold text-stone-800 dark:text-stone-200">{{ f.dish_name }}</td>
+                                <td class="py-4 px-4 text-center font-bold text-greenwood-900 dark:text-greenwood-400 font-mono">{{ f.predicted_quantity }}</td>
+                                <td class="py-4 px-4 text-center">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium 
+                                        {% if f.confidence_level == 'Alta' %}bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-300
+                                        {% elif f.confidence_level == 'Media' %}bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300
+                                        {% else %}bg-rose-100 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300{% endif %}">
+                                        {{ f.confidence_level }}
+                                    </span>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-2 w-2 rounded-full 
+                                            {% if f.predicted_quantity > 120 %}bg-red-500 animate-pulse
+                                            {% elif f.predicted_quantity > 90 %}bg-amber-500
+                                            {% else %}bg-green-500{% endif %}"></div>
+                                        <span class="text-xs text-stone-500 dark:text-stone-400">
+                                            {% if f.predicted_quantity > 120 %}Demanda Crítica
+                                            {% elif f.predicted_quantity > 90 %}Demanda Elevada
+                                            {% else %}Demanda Estable{% endif %}
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

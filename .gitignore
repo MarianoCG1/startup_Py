@@ -1,0 +1,27 @@
+# Entornos virtuales
+venv/
+ENV/
+env/
+
+# Variables de entorno y secretos
+.env
+
+# Base de datos local SQLite
+demandarest.db
+demandarest.db-journal
+
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# IDEs y Editores
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp

@@ -1,0 +1,35 @@
+<div id="sales-feedback" class="mt-4 animate-fade-in">
+    {% if success %}
+    <div class="p-4 bg-greenwood-50 border border-greenwood-100 rounded-xl text-greenwood-900 flex items-start gap-3">
+        <i data-lucide="check-circle-2" class="w-5 h-5 text-greenwood-700 shrink-0 mt-0.5"></i>
+        <div>
+            <p class="font-bold text-sm">Venta Registrada Exitosamente</p>
+            <p class="text-xs text-greenwood-800/80 mt-0.5">
+                Se guardó: <strong class="font-semibold">{{ quantity }}x {{ dish_name }}</strong> en el turno de <strong>{{ shift }}</strong>. El inventario ha sido actualizado.
+            </p>
+        </div>
+    </div>
+    <script>
+        // Disparar limpieza de campos del formulario
+        const form = document.getElementById('sales-form');
+        if (form) {
+            form.reset();
+            // Reestablecer la fecha por defecto a hoy
+            document.getElementById('sale_date').value = "2026-05-26";
+        }
+        // Reinicializar iconos Lucide en el elemento insertado
+        lucide.createIcons();
+    </script>
+    {% else %}
+    <div class="p-4 bg-rose-50 border border-rose-100 rounded-xl text-rose-900 flex items-start gap-3">
+        <i data-lucide="alert-octagon" class="w-5 h-5 text-rose-700 shrink-0 mt-0.5"></i>
+        <div>
+            <p class="font-bold text-sm">Error al registrar</p>
+            <p class="text-xs text-rose-800/80 mt-0.5">{{ error_message }}</p>
+        </div>
+    </div>
+    <script>
+        lucide.createIcons();
+    </script>
+    {% endif %}
+</div>

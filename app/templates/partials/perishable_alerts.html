@@ -1,0 +1,69 @@
+{% for item in alerts %}
+<div class="p-5 rounded-2xl border transition-all duration-200 hover:shadow-md flex flex-col justify-between 
+    {% if item.status == 'danger' %}
+        bg-red-50/80 dark:bg-red-950/20 border-red-200 dark:border-red-900/40 text-red-950 dark:text-red-200 shadow-sm shadow-red-100/50 dark:shadow-none
+    {% elif item.status == 'warning' %}
+        bg-amber-50/80 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/40 text-amber-950 dark:text-amber-200 shadow-sm shadow-amber-100/50 dark:shadow-none
+    {% else %}
+        bg-stone-50 dark:bg-stone-900/40 border-stone-100 dark:border-stone-800 text-stone-900 dark:text-stone-100
+    {% endif %}">
+    
+    <div>
+        <!-- Cabecera de Tarjeta -->
+        <div class="flex items-start justify-between gap-2">
+            <h4 class="font-bold text-base tracking-tight">{{ item.name }}</h4>
+            <span class="inline-flex items-center p-1 rounded-lg 
+                {% if item.status == 'danger' %}
+                    bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300
+                {% elif item.status == 'warning' %}
+                    bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300
+                {% else %}
+                    bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300{% endif %}">
+                {% if item.status == 'danger' %}
+                    <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                {% elif item.status == 'warning' %}
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                {% else %}
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                {% endif %}
+            </span>
+        </div>
+
+        <!-- Detalles de Stock -->
+        <div class="grid grid-cols-2 gap-4 mt-3 text-xs">
+            <div>
+                <p class="text-stone-500 dark:text-stone-400 font-semibold uppercase tracking-wider text-[10px]">Stock Actual</p>
+                <p class="text-lg font-extrabold mt-0.5 font-mono 
+                    {% if item.status == 'danger' %}text-red-700 dark:text-red-400
+                    {% elif item.status == 'warning' %}text-amber-700 dark:text-amber-400
+                    {% else %}text-stone-800 dark:text-stone-200{% endif %}">
+                    {{ item.current_stock }} {{ item.unit }}
+                </p>
+            </div>
+            <div>
+                <p class="text-stone-500 dark:text-stone-400 font-semibold uppercase tracking-wider text-[10px]">Demanda Semanal</p>
+                <p class="text-lg font-bold mt-0.5 text-stone-700 dark:text-stone-300 font-mono">{{ item.weekly_needed }} {{ item.unit }}</p>
+            </div>
+        </div>
+
+        <!-- Indicador de Vencimiento -->
+        <div class="mt-4 flex items-center gap-1.5 text-xs font-medium">
+            <i data-lucide="clock" class="w-3.5 h-3.5 opacity-60"></i>
+            <span>Vida útil: <strong class="font-semibold">{{ item.days_to_spoil }} días</strong> promedio</span>
+        </div>
+    </div>
+
+    <!-- Mensaje de Alerta Contextual -->
+    <div class="mt-5 pt-3 border-t text-xs 
+        {% if item.status == 'danger' %}border-red-200/50 dark:border-red-900/30 text-red-900/80 dark:text-red-300/80
+        {% elif item.status == 'warning' %}border-amber-200/50 dark:border-amber-900/30 text-amber-900/80 dark:text-amber-300/80
+        {% else %}border-stone-200/50 dark:border-stone-800 text-stone-500 dark:text-stone-400{% endif %}">
+        <p class="leading-relaxed font-medium">{{ item.message }}</p>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+    // Volver a vincular iconos Lucide
+    lucide.createIcons();
+</script>

@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Dueño - DemandaRest{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Encabezado del Dashboard Consolidad -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-gradient-to-r from-peru-600 to-amber-500 p-6 rounded-2xl shadow-lg text-white">
+        <div>
+            <span class="text-xs font-bold text-amber-100 uppercase tracking-widest bg-amber-700/30 px-2.5 py-1 rounded-md border border-amber-500/20">Control Consolidado de Cadena</span>
+            <h2 class="text-2xl md:text-3xl font-serif font-bold mt-2 tracking-tight">Panel del Propietario</h2>
+            <p class="text-sm text-amber-50/80 mt-1 flex items-center gap-1.5">
+                <i data-lucide="building" class="w-4 h-4 text-white"></i>
+                Monitoreo agregado de 3 locales: Santa Anita, Miraflores y Surco.
+            </p>
+        </div>
+        <div class="bg-white/10 backdrop-blur-md px-5 py-3 rounded-xl border border-white/10 text-center shrink-0">
+            <div class="text-xs text-amber-100 uppercase font-semibold">Total Locales</div>
+            <div class="text-2xl font-black text-white mt-0.5">3 Locales</div>
+        </div>
+    </div>
+
+    <!-- Tarjetas de Estadísticas Clave (Métricas) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Métrica 1: Kilos totales -->
+        <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-md p-6 flex items-center gap-4 relative overflow-hidden">
+            <div class="p-3 bg-greenwood-50 dark:bg-greenwood-900/20 rounded-xl text-greenwood-700 dark:text-greenwood-400">
+                <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <p class="text-stone-400 dark:text-stone-500 font-bold uppercase tracking-wider text-[10px]">Ingredientes a Comprar (Semana)</p>
+                <p class="text-2xl font-extrabold text-stone-900 dark:text-white mt-1 font-mono">
+                    {{ total_kilos }} <span class="text-sm font-semibold text-stone-500 font-sans">kg</span>
+                </p>
+            </div>
+            <div class="absolute bottom-0 right-0 w-24 h-1 bg-greenwood-700"></div>
+        </div>
+
+        <!-- Métrica 2: Feriados Activos -->
+        <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-md p-6 flex items-center gap-4 relative overflow-hidden">
+            <div class="p-3 bg-peru-50 dark:bg-peru-900/20 rounded-xl text-peru-600 dark:text-peru-400">
+                <i data-lucide="calendar" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <p class="text-stone-400 dark:text-stone-500 font-bold uppercase tracking-wider text-[10px]">Eventos Próximos (45 días)</p>
+                <p class="text-2xl font-extrabold text-stone-900 dark:text-white mt-1 font-mono">
+                    {{ holidays|length }} <span class="text-sm font-semibold text-stone-500 font-sans">fechas</span>
+                </p>
+            </div>
+            <div class="absolute bottom-0 right-0 w-24 h-1 bg-peru-500"></div>
+        </div>
+
+        <!-- Métrica 3: Consumo Promedio -->
+        <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-md p-6 flex items-center gap-4 relative overflow-hidden">
+            <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-600 dark:text-blue-400">
+                <i data-lucide="trending-up" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <p class="text-stone-400 dark:text-stone-500 font-bold uppercase tracking-wider text-[10px]">Plato Más Vendido</p>
+                <p class="text-2xl font-extrabold text-stone-900 dark:text-white mt-1">Ceviche Clásico</p>
+            </div>
+            <div class="absolute bottom-0 right-0 w-24 h-1 bg-blue-500"></div>
+        </div>
+
+      <!-- Gráfico de Predicción de Demanda -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Columna Gráfico (2/3 de ancho) -->
+        <div class="lg:col-span-2 bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-md p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="text-peru-500 w-5 h-5"></i>
+                        Pronóstico de Venta de Platos por Local
+                    </h3>
+                    <p class="text-xs text-stone-500 dark:text-stone-400 mt-0.5">Demanda estimada para la semana del 27 de Mayo al 2 de Junio, 2026</p>
+                </div>
+            </div>
+            
+            <div class="relative w-full h-80">
+                <canvas id="demandChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Columna Calendario de Feriados (1/3 de ancho) -->
+        <div class="lg:col-span-1 bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-md p-6">
+            <h3 class="text-lg font-bold text-stone-900 dark:text-white mb-4 flex items-center gap-2">
+                <i data-lucide="calendar-days" class="text-greenwood-700 w-5 h-5"></i>
+                Calendario de Impacto
+            </h3>
+            <p class="text-xs text-stone-500 dark:text-stone-400 mb-4">Fechas festivas en Perú que incrementan las visitas a restaurantes.</p>
+
+            <div class="space-y-4 max-h-[300px] overflow-y-auto pr-1">
+                {% if holidays %}
+                    {% for h in holidays %}
+                    <div class="p-4 rounded-xl border border-stone-100 dark:border-stone-800 bg-stone-50 dark:bg-stone-950/50 hover:bg-stone-100/50 dark:hover:bg-stone-850/50 transition-colors flex flex-col gap-2 relative">
+                        <div class="flex justify-between items-start gap-2">
+                            <div>
+                                <h4 class="font-bold text-sm text-stone-900 dark:text-white">{{ h.name }}</h4>
+                                <p class="text-[11px] text-stone-400 dark:text-stone-500 font-semibold font-mono mt-0.5 flex items-center gap-1">
+                                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                    {{ h.date }}
+                                </p>
+                            </div>
+                            
+                            <!-- Badge de Incremento de Demanda -->
+                            <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-red-100 dark:bg-red-950/30 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-900/30 shrink-0 shadow-sm animate-pulse">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i>
+                                {% if h.name == 'Día Nacional del Ceviche' %}+80%{% else %}+50%{% endif %} Demanda
+                            </span>
+                        </div>
+                        <p class="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">{{ h.description }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-8 text-stone-400 text-sm">
+                        <i data-lucide="smile" class="w-8 h-8 text-stone-300 mx-auto mb-2"></i>
+                        No hay feriados cercanos en la agenda.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Inicializar el gráfico con Chart.js consumiendo los datos provistos desde FastAPI
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch("/api/charts/demand")
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('demandChart').getContext('2d');
+                
+                // Configurar colores adaptivos para el tema oscuro
+                const isDark = document.documentElement.classList.contains('dark');
+                const gridColor = isDark ? '#2d2a29' : '#f3f4f6';
+                const textColor = isDark ? '#d6d3d1' : '#1c1917';
+                
+                // Configurar colores de datasets específicos del modo oscuro
+                if (isDark) {
+                    data.datasets[0].backgroundColor = 'rgba(34, 197, 94, 0.8)'; // verde más claro
+                    data.datasets[0].borderColor = 'rgba(34, 197, 94, 1)';
+                    
+                    data.datasets[2].backgroundColor = 'rgba(251, 191, 36, 0.7)'; // amarillo ámbar
+                    data.datasets[2].borderColor = 'rgba(251, 191, 36, 1)';
+                }
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels, // platos: Lomo Saltado, Ceviche, etc.
+                        datasets: data.datasets // locales: Santa Anita, Miraflores, Surco
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: textColor,
+                                    font: {
+                                        family: 'Outfit',
+                                        size: 12
+                                    },
+                                    usePointStyle: true,
+                                    boxWidth: 8
+                                }
+                            },
+                            tooltip: {
+                                bodyFont: {
+                                    family: 'Outfit'
+                                },
+                                titleFont: {
+                                    family: 'Outfit',
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                border: {
+                                    dash: [4, 4]
+                                },
+                                grid: {
+                                    color: gridColor
+                                },
+                                ticks: {
+                                    color: textColor,
+                                    font: {
+                                        family: 'Outfit'
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Porciones Proyectadas (Semanales)',
+                                    color: textColor,
+                                    font: {
+                                        family: 'Outfit',
+                                        weight: 'semibold'
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: textColor,
+                                    font: {
+                                        family: 'Outfit'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Error al cargar datos del gráfico:", error);
+            });
+    });
+</script>
+{% endblock %}
